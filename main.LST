@@ -1,0 +1,684 @@
+C51 COMPILER V9.57.0.0   MAIN                                                              06/01/2023 21:05:42 PAGE 1   
+
+
+C51 COMPILER V9.57.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: D:\C51\BIN\C51.EXE main.c LARGE OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include "STC12C5A.H"  //µ¥Æ¬»úÍ·ÎÄ¼þ
+   2          #include "intrins.h"   //°üº¬NOPÑÓÊ±Í·ÎÄ¼þ
+   3          #include "main.h"       //Ö÷³ÌÐòÍ·ÎÄ¼þ
+   4          #include "shuju.h"     //°üº¬×ÖÄ£Êý¾ÝÊý×é
+   5          #include "flash.h"      //¶¯»­²¿·Ö³ÌÐò
+   6          #include "hongwai.h"    //ºìÍâ²¿·Ö³ÌÐò
+   7          #include "key.h"        //°´¼ü²¿·Ö³ÌÐò
+   8          #include "pinpu.h"      //ÒôÀÖÆµÆ×²¿·Ö³ÌÐò
+   9          #include "jiance.h"     //¿ª»ú¼ì²âÄ£Ê½³ÌÐò
+  10          #include "moshi.h"      //Ä£Ê½¿ØÖÆ³ÌÐò    
+  11          
+  12          uchar xdata display[8][8];
+  13          uchar data msd=0;
+  14          uint ld=700;
+  15          uchar data key2=0,key3=0; 
+  16          uchar data xsdsq=0; 
+  17          uchar data sj_read_flag=0;  
+  18          uchar data read_flag=0;     //µçÄÔÉÏÎ»»ú¶Á±ê¼Ç
+  19          uchar data cnt=0;
+  20          uchar data cot=0;
+  21          uchar data cd=0,layerr=0,saom=0;
+  22          uint liangdu = 400;   //ÁÁ¶È
+  23          uint donghua_shudu=500;   //¶¯»­ËÙ¶Èµ÷½Ú 
+  24          int date=0;  //´®¿Ú2Êý¾Ý
+  25          bit busy = 0; //´®¿ÚÅÐ¶Ï±ê¼Ç
+  26          uchar data moshi=0; // Ä£Ê½
+  27          bit start3 = 0; //Ðý×ª×ÖÄ¸Ä£Ê½±ê¼Ç
+  28          bit key1=0;
+  29          uchar data abc_falg=0;       //Ðý×ª×ÖÄ¸±ê¼Ç
+  30          bit start1=1;//ÆµÆ×Ñ¡Ôñ±ê¼Ç
+  31          uchar data ping=2;  //ÆµÆ×Ñ¡Ôñ±ê¼Ç
+  32          uchar data dong=2;  //¶¯»­Ñ¡Ôñ±ê¼Ç
+  33          uchar data gai=2;// Ñ¡Ôñ±ê¼Ç
+  34          uchar data gaizi=2;//Ñ¡Ôñ±ê¼Ç
+  35          bit start2=1;// ¶¯»­Ñ¡Ôñ±ê¼Ç 
+  36          uchar data pingpu=0;  //Ñ¡ÔñÄÄ¸öÆµÆ×¶¯»­ 
+  37          uchar data donghua1=0; //Ñ¡ÔñÄÄ¸öÍÑ»ú¶¯»­ 
+  38          bit start_shuju=0; //wifi½ÓÊÕÊý¾Ý¿ªÊ¼±ê¼Ç
+  39          bit abcd=0;//Ðý×ª×ÖÄ¸
+  40          bit moshi_falg=0;
+  41          uchar data dhms_falg=0;
+  42          uchar data ppms_falg=0;
+  43          uchar data sjms_falg=0;
+  44          uchar data dnms_falg=0;
+  45          uchar data gzms_falg=0;
+  46          uchar data ldjian_falg=0;
+  47          uchar data ldjia_falg=0;
+  48          uchar data sdjia_falg=0;
+  49          uchar data sdjian_falg=0;
+  50          uchar data gzdh3_falg=0;
+  51          uchar gzdh3=0;
+  52          bit gaizi1_flag=1; //¿ª»ú¼ì²âÓÐÃ»ÓÐ±£´æ¹ýÄÚÈÝ
+  53          bit gaizi2_flag=1;
+  54          bit gaizi3_flag=1;
+  55          bit gaizi4_flag=1;
+C51 COMPILER V9.57.0.0   MAIN                                                              06/01/2023 21:05:42 PAGE 2   
+
+  56          uchar gaizi_geshu1=0; //¸Ä×ÖµÄ×ÖÊý
+  57          uchar gaizi_geshu2=0;
+  58          uchar gaizi_geshu3=0;
+  59          uchar jcount=0; //ÊÕµ½×ÖÄ¸µÄ¸öÊý
+  60          bit kaiji_flag=0;//
+  61          bit gaizhiflag=0;
+  62          uchar gzms_falg1=0;
+  63          uchar gzms_falg2=0;
+  64          uchar gzms_falg3=0;
+  65          uchar gzms_falg4=0;
+  66          uchar gzms_falg5=0;
+  67          
+  68          void init() //¶¨ÒåIO¿Ú¹¦ÄÜ
+  69          { 
+  70   1        P4SW=0xff;                //¶¨ÒåP4¿ÚÎªI/O¿Ú 
+  71   1        P0M1=0x00;          
+  72   1        P0M0=0xff;                //¶¨ÒåP0ÎªÇ¿ÉÏÀ­Êä³ö. 
+  73   1        P1M1=0x01; 
+  74   1        P1M0=0xfe;                //¶¨ÒåP1ÎªÇ¿ÉÏÀ­Êä³ö.   P1.0×÷ÎªAD´ËÊ±²»ÄÜ×÷ÎªÇ¿ÉÏÀ­
+  75   1        P2M1=0x00; 
+  76   1        P2M0=0xff;                //¶¨ÒåP2ÎªÇ¿ÉÏÀ­Êä³ö. 
+  77   1        P3M1=0x00; 
+  78   1        P3M0=0xf8;                //¶¨ÒåP3ÎªÇ¿ÉÏÀ­Êä³ö. 
+  79   1        P4M1=0x00; 
+  80   1        P4M0=0xff;                //¶¨ÒåP4ÎªÇ¿ÉÏÀ­Êä³ö.   
+  81   1      }
+  82          
+  83          void ADC0_Init (void) //AD³õÊ¼»¯
+  84          {
+  85   1        uchar i;
+  86   1        P1ASF = 0x01;                   //Open 8 channels ADC function
+  87   1        ADC_RES = 0;                    //Clear previous result ÇåÁãADCµÄ8Î»Êý¾Ý
+  88   1        AUXR1 &=0xFB;                   //1111,1011, Áî ADRJ=0 (10Î»A/D×ª»»½á¹ûµÄ¸ß8Î»·ÅÔÚADC_RES¼Ä´æÆ÷, µÍ2Î»·ÅÔ
+             -ÚADC_RESL¼Ä´æÆ÷)
+  89   1        ADC_CONTR = ADC_POWER | ADC_SPEEDLL;//ÅäÖÃADC¼Ä´æÆ÷  
+  90   1        for(i=0;i<24;i++)_nop_(); 
+  91   1      }
+  92          
+  93          void sinter() //ÖÐ¶Ï³õÊ¼»¯
+  94          {
+  95   1        TCON=0x01;
+  96   1        TH0=0x10;
+  97   1        TL0=0x00;
+  98   1        IPH = 0xfc;      
+  99   1        ET0 = 1;
+ 100   1        TR0 = 1;  
+ 101   1      }
+ 102          
+ 103          void init_uart(void) //´®¿Ú³õÊ¼»¯
+ 104          {
+ 105   1         PCON |= 0x80;
+ 106   1         SCON = 0x50;
+ 107   1         AUXR |= 0x40;
+ 108   1         AUXR &= 0xFE;
+ 109   1         TMOD &= 0x0F;
+ 110   1         TMOD |= 0x20;            
+ 111   1         TL1 = 0xE8;
+ 112   1         TH1 = 0xE8;
+ 113   1         ET1 = 0;
+ 114   1         TR1 = 1;
+ 115   1         ES=1;
+ 116   1         EA=1;
+C51 COMPILER V9.57.0.0   MAIN                                                              06/01/2023 21:05:42 PAGE 3   
+
+ 117   1      }
+ 118          
+ 119          void delayus(unsigned int yanshi)//¸ù¾ÝyanshiÖµµÄ´óÐ¡½øÐÐÑÓÊ±µÈ´ý²Ù×÷£¬1Ä¬ÈÏÎª2uS
+ 120          {
+ 121   1        unsigned int wmys;    //¶¨ÒåÑÓÊ±Ñ­»·¿ØÖÆ±äÁ¿
+ 122   1        for(wmys=0;wmys<=yanshi;wmys++);  //¸ù¾ÝÑÓÊ±²ÎÊý½øÐÐ¿ÕÑ­»·²Ù×÷£¬´ïµ½ÑÓÊ±¹¦ÄÜ
+ 123   1      }
+ 124          void delay10us(void)   //Îó²î -0.026765046296us STC 1T 22.1184Mhz
+ 125          {
+ 126   1          unsigned char a,b;
+ 127   1          for(b=1;b>0;b--)
+ 128   1            for(a=2;a>0;a--);    //Ä¬ÈÏµÄËÙ¶ÈÎª5£¬±äËÙ1-5-25-125
+ 129   1      }
+ 130          void delay5us(void)   //Îó²î -0.026765046296us STC 1T 22.1184Mhz
+ 131          {
+ 132   1          unsigned char a,b;
+ 133   1          for(b=1;b>0;b--)
+ 134   1              for(a=5;a>0;a--);    //Ä¬ÈÏµÄËÙ¶ÈÎª5£¬±äËÙ1-5-25-125
+ 135   1      }
+ 136          void delay(uint ihk)
+ 137          {    
+ 138   1        if(key3==2){return;}
+ 139   1        else
+ 140   1          {                                                                                              
+ 141   2            while(ihk--)
+ 142   2          {
+ 143   3            delay5us();   //12tµÄmcu ×¢ÊÍÕâ¸öÑÓÊ±¼´¿É
+ 144   3            if(dong == 1){return;} if(gai == 1){return;}if(gaizhiflag==1){return;}
+ 145   3          }
+ 146   2        }
+ 147   1      }
+ 148          void delays(int t)
+ 149          {
+ 150   1        int i;
+ 151   1        while(t--)
+ 152   1          for(i=0;i<700;i++);
+ 153   1      }
+ 154          
+ 155          void hansao(unsigned char hs) //¸ù¾ÝhsµÄÖµ ÅÐ¶ÏÑ¡ÔñÄÄÒ»ÐÐ ²Ù×ÝP2µÄÖµÑ¡Í¨1-8ÐÐ
+ 156          {
+ 157   1        if(hs<8)        //ÅÐ¶ÏhsµÄÖµÊÇ·ñÔÚÐÐÉ¨ÃèµÄÖµ·¶Î§ÄÚ£¬²»ÔÚ·¶Î§ÄÚ²»Ö´ÐÐÈÎºÎ²Ù×÷
+ 158   1        {
+ 159   2          if(M_EN == 0)
+ 160   2          {
+ 161   3            if(hs==7)     //Ñ¡Í¨µÚ1ÐÐ
+ 162   3            {
+ 163   4              P2=0Xfe;
+ 164   4              delayus(liangdu);
+ 165   4              P2 = 0xff;    //ÏûÓ°
+ 166   4              return;
+ 167   4            }
+ 168   3            if(hs==6)     //Ñ¡Í¨µÚ2ÐÐ
+ 169   3            {
+ 170   4                 P2=0Xfd;
+ 171   4               delayus(liangdu);
+ 172   4                 P2 = 0xff;   
+ 173   4               return;
+ 174   4            }
+ 175   3            if(hs==5)     //Ñ¡Í¨µÚ3ÐÐ
+ 176   3            {
+ 177   4              P2=0Xfb;
+ 178   4              delayus(liangdu);
+C51 COMPILER V9.57.0.0   MAIN                                                              06/01/2023 21:05:42 PAGE 4   
+
+ 179   4              P2 = 0xff;  
+ 180   4              return;
+ 181   4            }
+ 182   3            if(hs==4)     //Ñ¡Í¨µÚ4ÐÐ
+ 183   3            {
+ 184   4                P2=0Xf7;
+ 185   4              delayus(liangdu);
+ 186   4              P2 = 0xff;  
+ 187   4                return;
+ 188   4            }
+ 189   3            if(hs==3)     //Ñ¡Í¨µÚ5ÐÐ
+ 190   3            {
+ 191   4              P2=0Xef;
+ 192   4              delayus(liangdu);
+ 193   4              P2 = 0xff;              
+ 194   4              return;
+ 195   4            }
+ 196   3            if(hs==2)     //Ñ¡Í¨µÚ6ÐÐ
+ 197   3            {
+ 198   4              P2=0Xdf;
+ 199   4              delayus(liangdu);
+ 200   4              P2 = 0xff;  
+ 201   4              return;
+ 202   4            }
+ 203   3            if(hs==1)     //Ñ¡Í¨µÚ7ÐÐ
+ 204   3            {
+ 205   4              P2=0Xbf;
+ 206   4              delayus(liangdu);
+ 207   4              P2 = 0xff;  
+ 208   4              return;
+ 209   4            }
+ 210   3            if(hs==0)     //Ñ¡Í¨µÚ8ÐÐ
+ 211   3            {
+ 212   4              P2=0X7f;
+ 213   4              delayus(liangdu);
+ 214   4              P2 = 0xff;  
+ 215   4              return;
+ 216   4            }
+ 217   3          }
+ 218   2        }
+ 219   1      }
+ 220          //¶¯»­Çý¶¯³ÌÐò ·¢ËÍ×Ö½ÚÈë¼Ä´æÆ÷
+ 221          void sendbyte(unsigned int num1,unsigned int num2,unsigned int num3,unsigned int num4)
+ 222          {    
+ 223   1          unsigned char c;  
+ 224   1          for(c=0;c<8;c++)      
+ 225   1         {
+ 226   2            CLK=0;         
+ 227   2            M_LR_DS0=num1&0x80;      
+ 228   2          M_LG_DS0=num2&0x80;     
+ 229   2          M_HR_DS0=num3&0x80;     
+ 230   2          M_HG_DS0=num4&0x80;     
+ 231   2            CLK=1;        
+ 232   2          num1<<=1;         
+ 233   2            num2<<=1;         
+ 234   2            num3<<=1;         
+ 235   2            num4<<=1;           
+ 236   2          }
+ 237   1      }
+ 238          
+ 239          void sendbyte1(unsigned int num1,unsigned int num2,unsigned int num3,unsigned int num4)
+ 240          {
+C51 COMPILER V9.57.0.0   MAIN                                                              06/01/2023 21:05:42 PAGE 5   
+
+ 241   1          unsigned char c;
+ 242   1          for(c=0;c<8;c++)
+ 243   1          {
+ 244   2          CLK=0;   //Ä£ÄâÊ±ÖÓ¿ØÖÆ¶Ë¿Ú
+ 245   2          M_LR_DS0=num1&0x01;    //Ä£ÄâÊý¾Ý·¢ËÍ¶Ë¿Ú
+ 246   2          M_LG_DS0=num2&0x01;
+ 247   2          M_HR_DS0=num3&0x01;
+ 248   2          M_HG_DS0=num4&0x01;
+ 249   2          CLK=1;
+ 250   2          num1>>=1;
+ 251   2          num2>>=1;
+ 252   2          num3>>=1;
+ 253   2          num4>>=1;
+ 254   2          }
+ 255   1      }
+ 256          //************************************595Ð¾Æ¬Çý¶¯³ÌÐò3 ÉÏÎ»»ú¿ØÖÆ²¿·Ö***********************************
+ 257          //void sendbyteck(unsigned int num1,unsigned int num2,unsigned int num3,unsigned int num4)
+ 258          //{
+ 259          //    unsigned char c;
+ 260          //    for(c=0;c<8;c++)
+ 261          //    {
+ 262          //    CLK=0;
+ 263          //    M_LR_DS0=num1&0x01;
+ 264          //    M_LG_DS0=num2&0x01;
+ 265          //    M_HR_DS0=num3&0x01;     
+ 266          //    M_HG_DS0=num4&0x01;
+ 267          //    CLK=1;
+ 268          //    num1>>=1;
+ 269          //    num2>>=1;
+ 270          //    num3>>=1;
+ 271          //    num4>>=1;
+ 272          //    }
+ 273          //}
+ 274          //void fvb()    //µçÄÔÉÏÎ»»úÊý¾Ý´¦Àí
+ 275          //{
+ 276          //  if(read_flag)
+ 277          //  {
+ 278          //    read_flag=0;
+ 279          //    for(saom=0;saom<8;saom++)
+ 280          //    {
+ 281          //      displayck[saom+0]=((shuzu8X8[saom*8]>>7)&0x01)+(((shuzu8X8[saom*8+1]>>7)&0x01)<<1)+(((shuzu8X8[saom*8
+             -+2]>>7)&0x01)<<2)+(((shuzu8X8[saom*8+3]>>7)&0x01)<<3)+(((shuzu8X8[saom*8+4]>>7)&0x01)<<4)+(((shuzu8X8[saom*8+5]>>7)&0x01
+             -)<<5)+(((shuzu8X8[saom*8+6]>>7)&0x01)<<6)+(((shuzu8X8[saom*8+7]>>7)&0x01)<<7);  
+ 282          //      displayck[saom+8]=((shuzu8X8[saom*8]>>6)&0x01)+(((shuzu8X8[saom*8+1]>>6)&0x01)<<1)+(((shuzu8X8[saom*8
+             -+2]>>6)&0x01)<<2)+(((shuzu8X8[saom*8+3]>>6)&0x01)<<3)+(((shuzu8X8[saom*8+4]>>6)&0x01)<<4)+(((shuzu8X8[saom*8+5]>>6)&0x01
+             -)<<5)+(((shuzu8X8[saom*8+6]>>6)&0x01)<<6)+(((shuzu8X8[saom*8+7]>>6)&0x01)<<7);  
+ 283          //      displayck[saom+16]=((shuzu8X8[saom*8]>>5)&0x01)+(((shuzu8X8[saom*8+1]>>5)&0x01)<<1)+(((shuzu8X8[saom*
+             -8+2]>>5)&0x01)<<2)+(((shuzu8X8[saom*8+3]>>5)&0x01)<<3)+(((shuzu8X8[saom*8+4]>>5)&0x01)<<4)+(((shuzu8X8[saom*8+5]>>5)&0x0
+             -1)<<5)+(((shuzu8X8[saom*8+6]>>5)&0x01)<<6)+(((shuzu8X8[saom*8+7]>>5)&0x01)<<7); 
+ 284          //      displayck[saom+24]=((shuzu8X8[saom*8]>>4)&0x01)+(((shuzu8X8[saom*8+1]>>4)&0x01)<<1)+(((shuzu8X8[saom*
+             -8+2]>>4)&0x01)<<2)+(((shuzu8X8[saom*8+3]>>4)&0x01)<<3)+(((shuzu8X8[saom*8+4]>>4)&0x01)<<4)+(((shuzu8X8[saom*8+5]>>4)&0x0
+             -1)<<5)+(((shuzu8X8[saom*8+6]>>4)&0x01)<<6)+(((shuzu8X8[saom*8+7]>>4)&0x01)<<7); 
+ 285          //      displayck[saom+32]=((shuzu8X8[saom*8]>>3)&0x01)+(((shuzu8X8[saom*8+1]>>3)&0x01)<<1)+(((shuzu8X8[saom*
+             -8+2]>>3)&0x01)<<2)+(((shuzu8X8[saom*8+3]>>3)&0x01)<<3)+(((shuzu8X8[saom*8+4]>>3)&0x01)<<4)+(((shuzu8X8[saom*8+5]>>3)&0x0
+             -1)<<5)+(((shuzu8X8[saom*8+6]>>3)&0x01)<<6)+(((shuzu8X8[saom*8+7]>>3)&0x01)<<7); 
+ 286          //      displayck[saom+40]=((shuzu8X8[saom*8]>>2)&0x01)+(((shuzu8X8[saom*8+1]>>2)&0x01)<<1)+(((shuzu8X8[saom*
+             -8+2]>>2)&0x01)<<2)+(((shuzu8X8[saom*8+3]>>2)&0x01)<<3)+(((shuzu8X8[saom*8+4]>>2)&0x01)<<4)+(((shuzu8X8[saom*8+5]>>2)&0x0
+             -1)<<5)+(((shuzu8X8[saom*8+6]>>2)&0x01)<<6)+(((shuzu8X8[saom*8+7]>>2)&0x01)<<7); 
+ 287          //      displayck[saom+48]=((shuzu8X8[saom*8]>>1)&0x01)+(((shuzu8X8[saom*8+1]>>1)&0x01)<<1)+(((shuzu8X8[saom*
+             -8+2]>>1)&0x01)<<2)+(((shuzu8X8[saom*8+3]>>1)&0x01)<<3)+(((shuzu8X8[saom*8+4]>>1)&0x01)<<4)+(((shuzu8X8[saom*8+5]>>1)&0x0
+             -1)<<5)+(((shuzu8X8[saom*8+6]>>1)&0x01)<<6)+(((shuzu8X8[saom*8+7]>>1)&0x01)<<7); 
+ 288          //      displayck[saom+56]=((shuzu8X8[saom*8]>>0)&0x01)+(((shuzu8X8[saom*8+1]>>0)&0x01)<<1)+(((shuzu8X8[saom*
+C51 COMPILER V9.57.0.0   MAIN                                                              06/01/2023 21:05:42 PAGE 6   
+
+             -8+2]>>0)&0x01)<<2)+(((shuzu8X8[saom*8+3]>>0)&0x01)<<3)+(((shuzu8X8[saom*8+4]>>0)&0x01)<<4)+(((shuzu8X8[saom*8+5]>>0)&0x0
+             -1)<<5)+(((shuzu8X8[saom*8+6]>>0)&0x01)<<6)+(((shuzu8X8[saom*8+7]>>0)&0x01)<<7); 
+ 289          //    }
+ 290          //  }
+ 291          //  for(layerr=0;layerr<8;layerr++)
+ 292          //  {   
+ 293          //    key_baihei_scan();  
+ 294          //    hansao(layerr);
+ 295          //    sendbyteck(~displayck[layerr*8+0],~displayck[layerr*8+2],~displayck[layerr*8+4],~displayck[layerr*8+5]
+             -);
+ 296          //    sendbyteck(~displayck[layerr*8+3],~displayck[layerr*8+1],~displayck[layerr*8+6],~displayck[layerr*8+7]
+             -);
+ 297          //    SUO=0;    //Ä£ÄâËø´æÐÅºÅ¶Ë¿Ú        
+ 298          //    _nop_();
+ 299          //    SUO=1;   
+ 300          //      M_EN=0; 
+ 301          //    hansao(layerr);            
+ 302          //    delayus(ld);      
+ 303          //    M_EN=1;       
+ 304          //    if(key2==1||key2==2||key2==4||key2==5) 
+ 305          //    {
+ 306          //      break; 
+ 307          //    }      
+ 308          //  }
+ 309          //}
+ 310          void zhen(uchar *a,uchar v)  //Ç°Ãæ¶¯»­Êý¾Ý´¦Àí
+ 311          {
+ 312   1         char layer;
+ 313   1         while(v--)
+ 314   1         {  
+ 315   2            for(layer=0;layer<8;layer++)
+ 316   2            {
+ 317   3              if(xsdsq==1){;}
+ 318   3              else
+ 319   3              {
+ 320   4                key_baihei_scan(); 
+ 321   4                if(msd==2||msd==6)
+ 322   4                {
+ 323   5                  if(key2==1||key2==3||key2==5||key2==4)  
+ 324   5                  {
+ 325   6                    key3=1; 
+ 326   6                    M_EN=1;         
+ 327   6                    break;
+ 328   6                  }
+ 329   5                }
+ 330   4                if(msd==4)
+ 331   4                {
+ 332   5                  if(key2==1||key2==3||key2==5||key2==2)  
+ 333   5                  {
+ 334   6                    key3=1; 
+ 335   6                    M_EN=1;     
+ 336   6                    break;
+ 337   6                  }
+ 338   5                }
+ 339   4              } 
+ 340   3              sendbyte1(~a[layer*8+7],~a[layer*8+5],~a[layer*8+3],~a[layer*8+2]);
+ 341   3              sendbyte1(~a[layer*8+4],~a[layer*8+6],~a[layer*8+1],~a[layer*8+0]);
+ 342   3              SUO=0;            
+ 343   3              _nop_();
+ 344   3              SUO=1;
+ 345   3              M_EN=0; 
+ 346   3              hansao(7-layer);          
+C51 COMPILER V9.57.0.0   MAIN                                                              06/01/2023 21:05:42 PAGE 7   
+
+ 347   3              delayus(donghua_shudu);       
+ 348   3              M_EN=1;     
+ 349   3              if(dong == 1){break;}  
+ 350   3              if(abcd == 1){break;}
+ 351   3              if(gai == 1){break;} 
+ 352   3            }
+ 353   2            delays(2);       
+ 354   2         }
+ 355   1      }
+ 356          
+ 357          void W_side(uchar *tab,char num,char v)
+ 358          {
+ 359   1        uchar a[64]={0};
+ 360   1        int i,j;
+ 361   1        for(j=0;j<num;j++)
+ 362   1        {
+ 363   2          for(i=0;i<8;i++)
+ 364   2            a[i*8+7]=tab[j*8+i];  
+ 365   2          if(key3==1){break;}
+ 366   2          else{zhen(a,v);}
+ 367   2          delay(50);
+ 368   2        }
+ 369   1      }
+ 370          
+ 371          void main()
+ 372          {
+ 373   1        unsigned char p=0,k=0,l=0;    //¶¨Òå
+ 374   1        init(); 
+ 375   1        start_shuju = 1;
+ 376   1        IDelay(100);
+ 377   1        IRInit();
+ 378   1        ADC0_Init();
+ 379   1        clear(0);
+ 380   1        PWM_LED();//¿ªÆôPWMºôÎüµÆ¹¦ÄÜ
+ 381   1        moshi = 0;
+ 382   1        key2 = 0;
+ 383   1        ping=2; 
+ 384   1        dong=2;
+ 385   1        gai=2;
+ 386   1        gaizi=0;
+ 387   1        pingpu = 0;
+ 388   1        donghua1 = 0;
+ 389   1        start1 = 1;
+ 390   1        start2 = 1;
+ 391   1      //  turn_on(10);
+ 392   1      //  H_scan(10); // ×óÏòÓÒÉ¨Ãè¼ì²â
+ 393   1      //  V_scan(10); //ÏÂÏòÉÏÉ¨Ãè¼ì²â
+ 394   1      //  W_scan(10); //Ç°ÏòºóÉ¨Ãè¼ì²â
+ 395   1      //  PWM_POW=0;  //´ò¿ªµçÔ´Ö¸Ê¾µÆ
+ 396   1        sinter();
+ 397   1        TR0=0;     //¹Ø±Õ¶¨Ê±Æ÷ÏÔÊ¾É¨Ãè  Ïàµ±ÓÚ¹Ø±ÕÆµÆ×Ä£Ê½ÏÔÊ¾ºÍºóÃæ²¿·Ö¶¯»­ÏÔÊ¾ 
+ 398   1        while(1)  //¿ª»ú¼ì²âÄ£Ê½
+ 399   1        {
+ 400   2      //    H_scan(40); // ×óÏòÓÒÉ¨Ãè¼ì²â   
+ 401   2      //    V_scan(40); //ÏÂÏòÉÏÉ¨Ãè¼ì²â 
+ 402   2          W_scan(10); //ºóÏòÇ°É¨Ãè¼ì²â
+ 403   2          if(key1 == 1)
+ 404   2          {
+ 405   3            msd=2; 
+ 406   3            break;  
+ 407   3          }
+ 408   2          if(key2==3||key2==1||key2==4||key2==5||key2==2)
+C51 COMPILER V9.57.0.0   MAIN                                                              06/01/2023 21:05:42 PAGE 8   
+
+ 409   2          {
+ 410   3            if(key2==3)
+ 411   3            {
+ 412   4              msd=3;break;
+ 413   4            }
+ 414   3            else
+ 415   3            {
+ 416   4              if(key2==1)
+ 417   4              {
+ 418   5                msd=1;break;
+ 419   5              }
+ 420   4              if(key2==4)
+ 421   4              {
+ 422   5                msd=4;
+ 423   5                break;  
+ 424   5              }
+ 425   4              if(key2==5)
+ 426   4              {
+ 427   5                msd=5;
+ 428   5                break;  
+ 429   5              }
+ 430   4              if(key2==2)
+ 431   4              {
+ 432   5                msd=2;
+ 433   5                break;  
+ 434   5              }
+ 435   4            }
+ 436   3          }
+ 437   2        }
+ 438   1        delay(10); //Èç¹ûÊÇÇ°Ãæ¶¯»­ºÍÉÏ»úÄ£Ê½ÐèÒªÑÓÊ±ÏÂ
+ 439   1        while(1)  /*play list*/
+ 440   1        {      
+ 441   2          kaiji_flag = 1; //¿ª»úºó  
+ 442   2          yinyue_moshi();//ÒôÀÖÆµÆ×Ä£Ê½
+ 443   2          donghua_moshi();//¶¯»­Ä£Ê½
+ 444   2          shangweiji_moshi(); //ÉÏÎ»»úÄ£Ê½
+ 445   2          xiugaidonghua_moshi(); //ÏÔÊ¾ÎÄ×Ö¶¯»­       
+ 446   2        }
+ 447   1      }
+ 448          
+ 449          void serial (void) interrupt 4 using 1//´®¿ÚÖÐ¶Ï
+ 450          {
+ 451   1        uchar tempbuff;ES=0;
+ 452   1        if(RI)
+ 453   1        {
+ 454   2          RI=0;tempbuff=SBUF;
+ 455   2          switch(cnt)
+ 456   2          {
+ 457   3            case 0:if(tempbuff==0xf2)cnt=1;else {cnt=0;}break;
+ 458   3            case 1:shuzu8X8[cd++]=tempbuff;
+ 459   3            if(cd==64)
+ 460   3            {
+ 461   4              cnt=0;
+ 462   4              cd=0;
+ 463   4              read_flag=1;
+ 464   4            }
+ 465   3            else
+ 466   3            {
+ 467   4              break;
+ 468   4            }
+ 469   3            default:break;
+ 470   3          }
+C51 COMPILER V9.57.0.0   MAIN                                                              06/01/2023 21:05:42 PAGE 9   
+
+ 471   2        }
+ 472   1        ES=1;
+ 473   1      }
+ 474          
+ 475          void print1() interrupt 1//¶¨Ê±ÖÐ¶Ï
+ 476          {
+ 477   1        static uchar layert=0;
+ 478   1        TR0 = 0;
+ 479   1        ET0= 0;
+ 480   1      
+ 481   1        if(msd==1)    //ÆµÆ×Ä£Ê½
+ 482   1        {   
+ 483   2             sendbyte(~display[layert][0],~display[layert][2],~display[layert][4],~display[layert][5]);
+ 484   2             sendbyte(~display[layert][3],~display[layert][1],~display[layert][6],~display[layert][7]);
+ 485   2             SUO=0;
+ 486   2             _nop_();
+ 487   2             SUO=1;
+ 488   2             M_EN=0;
+ 489   2             hansao(7-layert);   
+ 490   2             delayus(ld);
+ 491   2             M_EN=1;         
+ 492   2                  if (layert<7) 
+ 493   2                       layert++;
+ 494   2                  else 
+ 495   2                       layert=0;
+ 496   2              key_baihei_scan();  
+ 497   2            if(msd==1)
+ 498   2            {
+ 499   3              if(key2==2||key2==3||key2==4||key2==5)
+ 500   3              {
+ 501   4                key3=2; 
+ 502   4                return;     
+ 503   4              } 
+ 504   3            }         
+ 505   2             TH0=0xef;
+ 506   2                 TL0=0x00;
+ 507   2        }
+ 508   1        if(msd==2)   //ºó²¿·Ö¶¯»­ 
+ 509   1        {         
+ 510   2             sendbyte(~display[layert][0],~display[layert][2],~display[layert][4],~display[layert][5]);
+ 511   2             sendbyte(~display[layert][3],~display[layert][1],~display[layert][6],~display[layert][7]);
+ 512   2        
+ 513   2             SUO=0;
+ 514   2             _nop_();
+ 515   2             SUO=1;
+ 516   2             M_EN=0;
+ 517   2             hansao(layert); 
+ 518   2             delayus(donghua_shudu);
+ 519   2             M_EN=1;         
+ 520   2                  if (layert<7) 
+ 521   2                       layert++;
+ 522   2                  else 
+ 523   2                       layert=0;  
+ 524   2               key_baihei_scan(); 
+ 525   2            if(msd==2) 
+ 526   2            {
+ 527   3              if(key2==1||key2==3||key2==4||key2==5)
+ 528   3              {
+ 529   4                key3=2;
+ 530   4                return;     
+ 531   4              } 
+ 532   3            }  
+C51 COMPILER V9.57.0.0   MAIN                                                              06/01/2023 21:05:42 PAGE 10  
+
+ 533   2             TH0=0xef;
+ 534   2                 TL0=0x00;
+ 535   2        }
+ 536   1        if(msd==4)   //ÎÄ×Ö¶¯»­²¿·Ö 
+ 537   1        {         
+ 538   2             sendbyte(~display[layert][0],~display[layert][2],~display[layert][4],~display[layert][5]);
+ 539   2             sendbyte(~display[layert][3],~display[layert][1],~display[layert][6],~display[layert][7]);
+ 540   2        
+ 541   2             SUO=0;
+ 542   2             _nop_();
+ 543   2             SUO=1;
+ 544   2             M_EN=0;
+ 545   2             hansao(layert); 
+ 546   2             delayus(donghua_shudu);
+ 547   2             M_EN=1;         
+ 548   2                  if (layert<7) 
+ 549   2                       layert++;
+ 550   2                  else 
+ 551   2                       layert=0;  
+ 552   2               key_baihei_scan(); 
+ 553   2            if(msd==4) 
+ 554   2            {
+ 555   3              if(key2==1||key2==3||key2==2||key2==5)
+ 556   3              {
+ 557   4                key3=2;
+ 558   4                return;     
+ 559   4              } 
+ 560   3            }  
+ 561   2            
+ 562   2             TH0=0xef;
+ 563   2                 TL0=0x00;
+ 564   2        }
+ 565   1        TR0 = 1;
+ 566   1        ET0 = 1;    
+ 567   1      }
+ 568          
+ 569          void shudu_jia() //ËÙ¶È¼Ó
+ 570          {
+ 571   1        if(key2==2 || key2==4)
+ 572   1        {
+ 573   2          if(donghua_shudu>500 && donghua_shudu<=1500)
+ 574   2          {
+ 575   3            donghua_shudu = donghua_shudu-200;
+ 576   3          }
+ 577   2          else if(donghua_shudu>100 && donghua_shudu<=500)
+ 578   2          {
+ 579   3            donghua_shudu = donghua_shudu-100;
+ 580   3          }
+ 581   2          else if(donghua_shudu>30 && donghua_shudu<=100)
+ 582   2          {
+ 583   3            donghua_shudu = donghua_shudu-40;
+ 584   3          }
+ 585   2          else if(donghua_shudu>0 && donghua_shudu<=30)
+ 586   2          {
+ 587   3            donghua_shudu = donghua_shudu-10;   
+ 588   3          }
+ 589   2          if(donghua_shudu<=0 || donghua_shudu> 2000)
+ 590   2          {
+ 591   3            donghua_shudu=1;
+ 592   3          }     
+ 593   2        }   
+ 594   1      }
+C51 COMPILER V9.57.0.0   MAIN                                                              06/01/2023 21:05:42 PAGE 11  
+
+ 595          void shudu_jian() //ËÙ¶È¼õ
+ 596          {
+ 597   1        if(key2==2 || key2==4)
+ 598   1        {
+ 599   2          if(donghua_shudu>0 && donghua_shudu<=30)
+ 600   2          {
+ 601   3            donghua_shudu = donghua_shudu+10;
+ 602   3          }
+ 603   2          else if(donghua_shudu>30 && donghua_shudu<=100)
+ 604   2          {
+ 605   3            donghua_shudu = donghua_shudu+40;
+ 606   3          }
+ 607   2          else if(donghua_shudu>100 && donghua_shudu<=500)
+ 608   2          {
+ 609   3            donghua_shudu = donghua_shudu+100;
+ 610   3          }
+ 611   2          else if(donghua_shudu>500 && donghua_shudu<1500)
+ 612   2          {
+ 613   3            donghua_shudu = donghua_shudu+200;
+ 614   3          }
+ 615   2          
+ 616   2          if(donghua_shudu >= 1500)
+ 617   2          {
+ 618   3            donghua_shudu = 1500;   
+ 619   3          } 
+ 620   2        }      
+ 621   1      }
+ 622          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =  40023    ----
+   CONSTANT SIZE    =  11497    ----
+   XDATA SIZE       =    549    2426
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     93    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =     15    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
